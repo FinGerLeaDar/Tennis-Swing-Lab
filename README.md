@@ -1,87 +1,67 @@
-# 🎾 Tennis Swing Lab V1
+# 🎾 Tennis Swing Lab V1.1
 
-一個以 GitHub Pages 為目標的本機優先（local-first）網球動作分析 Web App。
+## 這版修正
 
-## V1 功能
+V1.1 針對第一輪 GitHub Pages 測試加入：
 
-- Upload 本機網球影片
-- 原始影片不會上傳到 GitHub / backend
-- MediaPipe Pose Landmarker
-- 人體 33 點 skeleton
-- 逐格分析
-- Forehand / Backhand / Serve / Other 選擇
-- 15 / 24 / 30 FPS 分析選擇
-- 640 / 960 / 1280px 分析寬度選擇
-- 肩膀、手肘、膝等角度
-- Slow motion
-- Timeline
-- Desktop / mobile responsive UI
+- AI loading 狀態
+- GPU → CPU 自動 fallback
+- AI 載入錯誤提示
+- Retry 按鈕
+- 影片選擇後自動啟用分析
+- MediaPipe VIDEO mode 使用遞增 timestamp
+- 保持影片 local-first，不把影片上傳到 GitHub/backend
 
-## GitHub Pages 部署
+## 檔案
 
-1. 建立一個新的 GitHub repository。
-2. 上傳：
-   - `index.html`
-   - `app.js`
-   - `style.css`
-   - `README.md`
-3. Repository → **Settings** → **Pages**
-4. Source 選 **Deploy from a branch**
-5. Branch 選 `main` / root
-6. Save
-7. 等待 GitHub Pages 建立網站。
+- `index.html`
+- `app.js`
+- `style.css`
+- `README.md`
 
-## 重要：影片處理方式
+## GitHub Pages
 
-影片使用瀏覽器的 local `File` / `HTMLVideoElement` 讀取。
+將 4 個檔案放入 repository root，然後：
 
-這個 V1 **沒有把影片 POST 到任何 server**。
+`Settings → Pages → Deploy from a branch → main / root`
 
-GitHub Pages 只負責提供網站檔案及載入前端 AI runtime/model。
+## 注意
 
-因此，即使手機影片是 1GB，亦不是先上傳 1GB 到 GitHub 再分析。
+MediaPipe runtime 與 Pose Landmarker model 目前由 CDN / Google-hosted model 載入，所以第一次使用需要 Internet。
 
-## AI 模型
+影片本身由瀏覽器的 local File / HTMLVideoElement 讀取，不會 POST 到你的 GitHub repository。
 
-V1 使用 MediaPipe Tasks Vision 的 Pose Landmarker。
+## 第一輪測試
 
-模型與 WASM runtime 目前由 jsDelivr / Google-hosted model URL 載入，因此第一次開啟網站需要 Internet。
+建議先用：
 
-如日後要做到完全離線，可以把相應 runtime/model 放入 repository 或改用其他本地部署方式。
+- 720 × 1280
+- 約 24 秒
+- 3.2 MB
+- 30 FPS
 
-## V1 的限制
+的測試片。
 
-人體姿勢分析是第一階段。
+先選影片，確認右上角變成：
 
-目前**未正式加入**：
+`● AI Ready · GPU`
 
-- Tennis racket detection
-- Tennis ball detection
-- 精確 contact point
-- racket-head speed
-- ball speed
-- 3D biomechanical reconstruction
-- 專業教練級動作評分
+或者：
 
-這些會放在 V2+。
+`● AI Ready · CPU`
 
-## 拍攝建議
+之後按：
 
-- 手機固定
-- 全身入鏡
-- 球拍盡量清楚
-- 側面或約 45° 視角
-- 60fps 優先
-- 先用 10–30 秒短片測試
+`🧠 開始分析`
 
-## 下一步
+## V1.1 尚未包括
 
-V2 建議加入：
+- 球拍偵測
+- 網球偵測
+- Contact Point
+- Racket Path
+- Ball Path
+- Racket Speed
+- 專業教練級評分
 
-1. Racket tracking
-2. Ball tracking
-3. Contact point
-4. Swing path
-5. 自動分辨 Forehand / Backhand / Serve
-6. 動作 phase detection
-7. 多次 swing comparison
+下一階段才加入以上功能。

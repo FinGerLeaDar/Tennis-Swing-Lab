@@ -1,152 +1,118 @@
 <!doctype html>
 <html lang="zh-HK">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#0b1020">
-  <title>Tennis Swing Lab V1</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070b16">
+<title>Tennis Swing Lab V1.1</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="topbar">
+<header class="topbar">
+  <div>
+    <div class="eyebrow">TENNIS SWING LAB</div>
+    <h1>🎾 Tennis Swing Lab <span>V1.1</span></h1>
+    <p>本機影片分析 · 人體姿勢 · 逐格動作</p>
+  </div>
+  <div class="status loading" id="modelStatus">● 載入 AI…</div>
+</header>
+
+<main class="app">
+<section class="card upload-card">
+  <div class="section-title">
     <div>
-      <div class="eyebrow">TENNIS SWING LAB</div>
-      <h1>🎾 Tennis Swing Lab <span>V1</span></h1>
-      <p>本機影片分析 · 人體姿勢 · 逐格動作</p>
+      <h2>1. 選擇網球影片</h2>
+      <p>影片只在你的瀏覽器內處理，不會上傳到 GitHub。</p>
     </div>
-    <div class="status" id="modelStatus">● 準備中</div>
-  </header>
+    <label class="file-button">📹 選擇影片<input id="videoInput" type="file" accept="video/*"></label>
+  </div>
 
-  <main class="app">
-    <section class="card upload-card">
-      <div class="section-title">
-        <div>
-          <h2>1. 選擇網球影片</h2>
-          <p>影片只在你的瀏覽器內處理，不會上傳到 GitHub。</p>
-        </div>
-        <label class="file-button">
-          📹 選擇影片
-          <input id="videoInput" type="file" accept="video/*">
-        </label>
-      </div>
+  <div id="errorBox" class="error hidden">
+    <strong>⚠️ AI 載入失敗</strong>
+    <div id="errorText"></div>
+    <button id="retryBtn">重新載入 AI</button>
+  </div>
 
-      <div id="videoMeta" class="video-meta hidden"></div>
+  <div id="videoMeta" class="video-meta hidden"></div>
 
-      <div class="settings">
-        <label>
-          動作
-          <select id="strokeType">
-            <option value="forehand">Forehand 正手</option>
-            <option value="backhand">Backhand 反手</option>
-            <option value="serve">Serve 發球</option>
-            <option value="other">Other 其他</option>
-          </select>
-        </label>
+  <div class="settings">
+    <label>動作
+      <select id="strokeType">
+        <option value="forehand">Forehand 正手</option>
+        <option value="backhand">Backhand 反手</option>
+        <option value="serve">Serve 發球</option>
+        <option value="other">Other 其他</option>
+      </select>
+    </label>
+    <label>分析 FPS
+      <select id="analysisFps">
+        <option value="15">15 FPS · 快</option>
+        <option value="24">24 FPS · 標準</option>
+        <option value="30" selected>30 FPS · 詳細</option>
+      </select>
+    </label>
+    <label>分析解像度
+      <select id="analysisWidth">
+        <option value="640">640px · 快</option>
+        <option value="960" selected>960px · 標準</option>
+        <option value="1280">1280px · 高</option>
+      </select>
+    </label>
+  </div>
 
-        <label>
-          分析 FPS
-          <select id="analysisFps">
-            <option value="15">15 FPS · 快</option>
-            <option value="24">24 FPS · 標準</option>
-            <option value="30" selected>30 FPS · 詳細</option>
-          </select>
-        </label>
+  <button id="analyzeBtn" class="primary" disabled>🧠 開始分析</button>
+  <div class="progress-wrap hidden" id="progressWrap">
+    <div class="progress-row"><span id="progressText">準備分析…</span><span id="progressPercent">0%</span></div>
+    <progress id="progressBar" value="0" max="100"></progress>
+  </div>
+</section>
 
-        <label>
-          分析解像度
-          <select id="analysisWidth">
-            <option value="640">640px · 快</option>
-            <option value="960" selected>960px · 標準</option>
-            <option value="1280">1280px · 高</option>
-          </select>
-        </label>
-      </div>
+<section class="workspace">
+<section class="card video-card">
+  <div class="card-head"><h2>🎬 動作畫面</h2><span id="frameLabel">Frame — / —</span></div>
+  <div class="video-stage" id="videoStage">
+    <video id="video" playsinline preload="metadata"></video>
+    <canvas id="poseCanvas"></canvas>
+    <div id="emptyState" class="empty-state">
+      <div>🎾</div><strong>先選擇一條網球影片</strong><span>建議固定手機、全身入鏡，60fps 更理想。</span>
+    </div>
+  </div>
+  <div class="controls">
+    <button id="playBtn" disabled>▶ 播放</button>
+    <button id="slowBtn" disabled>🐢 0.25×</button>
+    <button id="prevBtn" disabled>◀ 上一格</button>
+    <button id="nextBtn" disabled>下一格 ▶</button>
+  </div>
+  <input id="timeline" class="timeline" type="range" min="0" max="0" value="0" step="1" disabled>
+  <div class="phase-bar"><span>準備</span><span>轉身</span><span>引拍</span><span>向前揮</span><span>擊球</span><span>收拍</span></div>
+</section>
 
-      <button id="analyzeBtn" class="primary" disabled>🧠 開始分析</button>
-      <div class="progress-wrap hidden" id="progressWrap">
-        <div class="progress-row">
-          <span id="progressText">準備分析…</span>
-          <span id="progressPercent">0%</span>
-        </div>
-        <progress id="progressBar" value="0" max="100"></progress>
-      </div>
-    </section>
+<aside class="card metrics-card">
+  <div class="card-head"><h2>📐 動作數據</h2><span id="analysisState">尚未分析</span></div>
+  <div class="metric-grid">
+    <div class="metric"><span>左手肘</span><strong id="leftElbow">—</strong></div>
+    <div class="metric"><span>右手肘</span><strong id="rightElbow">—</strong></div>
+    <div class="metric"><span>左膝</span><strong id="leftKnee">—</strong></div>
+    <div class="metric"><span>右膝</span><strong id="rightKnee">—</strong></div>
+    <div class="metric"><span>左肩角度</span><strong id="leftShoulder">—</strong></div>
+    <div class="metric"><span>右肩角度</span><strong id="rightShoulder">—</strong></div>
+    <div class="metric"><span>肩膀線角度</span><strong id="shoulderRotation">—</strong></div>
+    <div class="metric"><span>髖部線角度</span><strong id="hipRotation">—</strong></div>
+  </div>
+  <div class="landmark-info"><h3>🦴 Pose Landmarks</h3><p id="landmarkText">分析後會顯示人體 33 點追蹤狀態。</p></div>
+  <div class="notice"><strong>V1.1 修正</strong><p>AI 會先嘗試 GPU；如瀏覽器不支援，會自動改用 CPU，並顯示清楚的載入狀態。</p></div>
+</aside>
+</section>
 
-    <section class="workspace">
-      <div class="card video-card">
-        <div class="card-head">
-          <h2>🎬 動作畫面</h2>
-          <span id="frameLabel">Frame — / —</span>
-        </div>
-
-        <div class="video-stage" id="videoStage">
-          <video id="video" playsinline preload="metadata"></video>
-          <canvas id="poseCanvas"></canvas>
-          <div id="emptyState" class="empty-state">
-            <div>🎾</div>
-            <strong>先選擇一條網球影片</strong>
-            <span>建議固定手機、全身入鏡，60fps 更理想。</span>
-          </div>
-        </div>
-
-        <div class="controls">
-          <button id="playBtn" disabled>▶ 播放</button>
-          <button id="slowBtn" disabled>🐢 0.25×</button>
-          <button id="prevBtn" disabled>◀ 上一格</button>
-          <button id="nextBtn" disabled>下一格 ▶</button>
-        </div>
-
-        <input id="timeline" class="timeline" type="range" min="0" max="0" value="0" step="1" disabled>
-
-        <div class="phase-bar">
-          <span>準備</span><span>轉身</span><span>引拍</span><span>向前揮</span><span>擊球</span><span>收拍</span>
-        </div>
-      </div>
-
-      <aside class="card metrics-card">
-        <div class="card-head">
-          <h2>📐 動作數據</h2>
-          <span id="analysisState">尚未分析</span>
-        </div>
-
-        <div class="metric-grid">
-          <div class="metric"><span>左肩角度</span><strong id="leftShoulder">—</strong></div>
-          <div class="metric"><span>右肩角度</span><strong id="rightShoulder">—</strong></div>
-          <div class="metric"><span>左手肘</span><strong id="leftElbow">—</strong></div>
-          <div class="metric"><span>右手肘</span><strong id="rightElbow">—</strong></div>
-          <div class="metric"><span>左膝</span><strong id="leftKnee">—</strong></div>
-          <div class="metric"><span>右膝</span><strong id="rightKnee">—</strong></div>
-          <div class="metric"><span>肩膀旋轉</span><strong id="shoulderRotation">—</strong></div>
-          <div class="metric"><span>髖部旋轉</span><strong id="hipRotation">—</strong></div>
-        </div>
-
-        <div class="landmark-info">
-          <h3>🦴 Pose Landmarks</h3>
-          <p id="landmarkText">分析後會顯示人體 33 點追蹤狀態。</p>
-        </div>
-
-        <div class="notice">
-          <strong>V1 技術限制</strong>
-          <p>目前先做人體姿勢與角度分析。球拍、網球、擊球點及球拍速度會在後續版本加入。</p>
-        </div>
-      </aside>
-    </section>
-
-    <section class="card tips">
-      <h2>📱 拍攝建議</h2>
-      <div class="tips-grid">
-        <div>① 手機固定，不要手持跟拍</div>
-        <div>② 全身及球拍盡量入鏡</div>
-        <div>③ 側面或約 45° 最適合第一版</div>
-        <div>④ 60fps 比 30fps 更適合高速網球動作</div>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    Tennis Swing Lab V1 · GitHub Pages · Local-first analysis
-  </footer>
-
-  <script type="module" src="app.js"></script>
+<section class="card tips">
+<h2>📱 拍攝建議</h2>
+<div class="tips-grid">
+<div>① 手機固定，不要手持跟拍</div><div>② 全身及球拍盡量入鏡</div>
+<div>③ 側面或約 45° 最適合第一版</div><div>④ 60fps 比 30fps 更適合高速網球動作</div>
+</div>
+</section>
+</main>
+<footer>Tennis Swing Lab V1.1 · GitHub Pages · Local-first analysis</footer>
+<script type="module" src="app.js"></script>
 </body>
 </html>
