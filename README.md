@@ -1,8 +1,8 @@
-# Tennis Swing Lab V1.2
+# Tennis Swing Lab V1.3
 
 這一版重點不是增加更多功能，而是**真正驗證 AI 是否有成功載入及推理**。
 
-## V1.2 改動
+## V1.3 改動
 
 - MediaPipe Library 狀態
 - WASM Runtime 狀態
@@ -43,3 +43,10 @@
 7. 最後 Real Test 應顯示類似 `✓ 576/576 frames`
 
 如果不是 Ready，請把頁面上的紅色完整錯誤訊息 screenshot 貼回來。
+
+
+## V1.3
+- Dynamic import AI library，避免 module import 失敗令整個 app 靜默停止。
+- jsDelivr ESM + unpkg fallback。
+- Library / WASM / Model / Delegate 每一層獨立顯示狀態。
+- 如果載入失敗，頁面直接顯示真正錯誤。

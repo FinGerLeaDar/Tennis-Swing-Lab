@@ -1,5 +1,5 @@
-import { PoseLandmarker, FilesetResolver } from
-  "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22";
+let PoseLandmarker = null;
+let FilesetResolver = null;
 
 const $ = (id) => document.getElementById(id);
 const els = {
@@ -24,37 +24,60 @@ function setDiag(el, text, ok=false, bad=false){
 function setStatus(text, cls="loading"){ els.modelStatus.textContent=text; els.modelStatus.className=`status ${cls}`; }
 function showError(title, err){
   const detail = err?.stack || err?.message || String(err);
-  els.error.textContent = `${title}\n\n${detail}`;
+  els.error.textContent = `${title}\n\n${detail}\n\nBrowser: ${navigator.userAgent}`;
   els.error.classList.remove("hidden"); els.retry.classList.remove("hidden");
   setStatus("● AI 錯誤","error");
 }
 function clearError(){ els.error.classList.add("hidden"); els.retry.classList.add("hidden"); }
 
+async function loadLibrary(){
+  setStatus("● 載入 AI Library…","loading");
+  setDiag(els.lib,"載入中"); setDiag(els.wasm,"等待"); setDiag(els.model,"等待");
+  setDiag(els.delegate,"等待"); setDiag(els.test,"未測試");
+
+  const urls = [
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/+esm",
+    "https://unpkg.com/@mediapipe/tasks-vision@0.10.22/vision_bundle.mjs"
+  ];
+  let lastError = null;
+  for (const url of urls){
+    try{
+      els.info.textContent = `正在載入 AI Library：${url}`;
+      const mod = await import(url);
+      if (!mod.PoseLandmarker || !mod.FilesetResolver) {
+        throw new Error("Library loaded, but PoseLandmarker / FilesetResolver export not found.");
+      }
+      PoseLandmarker = mod.PoseLandmarker;
+      FilesetResolver = mod.FilesetResolver;
+      setDiag(els.lib,"import 成功",true);
+      return true;
+    }catch(e){ lastError=e; }
+  }
+  throw lastError || new Error("所有 AI Library CDN 都無法載入。");
+}
+
 async function loadPose(){
   clearError(); pose=null; delegate=null;
-  setStatus("● 載入 MediaPipe…","loading");
-  setDiag(els.lib,"載入中"); setDiag(els.wasm,"等待"); setDiag(els.model,"等待"); setDiag(els.delegate,"等待"); setDiag(els.test,"未測試");
   try{
-    setDiag(els.lib,"import 成功",true);
+    await loadLibrary();
     const vision = await FilesetResolver.forVisionTasks(WASM_URL);
     setDiag(els.wasm,"WASM runtime OK",true);
 
-    let gpuErr=null;
     try{
       setStatus("● 載入 Pose Model · GPU…","loading");
+      els.info.textContent="正在初始化 Pose Model…";
       pose = await PoseLandmarker.createFromOptions(vision,{
         baseOptions:{modelAssetPath:MODEL_URL, delegate:"GPU"},
-        runningMode:"VIDEO", numPoses:1,
+        runningMode:"VIDEO",numPoses:1,
         minPoseDetectionConfidence:.45,minPosePresenceConfidence:.45,minTrackingConfidence:.45
       });
       delegate="GPU";
-    }catch(e){ gpuErr=e; }
-
-    if(!pose){
+    }catch(gpuError){
       setStatus("● GPU 不支援，切換 CPU…","loading");
+      els.info.textContent="GPU 初始化失敗，正在嘗試 CPU…";
       pose = await PoseLandmarker.createFromOptions(vision,{
         baseOptions:{modelAssetPath:MODEL_URL, delegate:"CPU"},
-        runningMode:"VIDEO", numPoses:1,
+        runningMode:"VIDEO",numPoses:1,
         minPoseDetectionConfidence:.45,minPosePresenceConfidence:.45,minTrackingConfidence:.45
       });
       delegate="CPU";
@@ -69,7 +92,7 @@ async function loadPose(){
   }catch(e){
     setDiag(els.model,"failed",false,true);
     setDiag(els.delegate,"failed",false,true);
-    showError("AI 初始化失敗。請把下面完整錯誤貼給我：",e);
+    showError("AI 初始化失敗。以下係真正錯誤：",e);
     return false;
   }
 }
