@@ -35,11 +35,14 @@ async function loadLibrary(){
   setDiag(els.lib,"載入中"); setDiag(els.wasm,"等待"); setDiag(els.model,"等待");
   setDiag(els.delegate,"等待"); setDiag(els.test,"未測試");
 
+  // Google 官方 Web guide 使用 vision_bundle.mjs。
+  // 先嘗試 exact file，再嘗試 jsDelivr ESM transform，最後才試 unpkg。
   const urls = [
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/vision_bundle.mjs",
     "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/+esm",
     "https://unpkg.com/@mediapipe/tasks-vision@0.10.22/vision_bundle.mjs"
   ];
-  let lastError = null;
+  const errors = [];
   for (const url of urls){
     try{
       els.info.textContent = `正在載入 AI Library：${url}`;
@@ -51,9 +54,11 @@ async function loadLibrary(){
       FilesetResolver = mod.FilesetResolver;
       setDiag(els.lib,"import 成功",true);
       return true;
-    }catch(e){ lastError=e; }
+    }catch(e){
+      errors.push(`${url}\n${e?.stack || e?.message || e}`);
+    }
   }
-  throw lastError || new Error("所有 AI Library CDN 都無法載入。");
+  throw new Error("所有 AI Library CDN 都失敗：\n\n" + errors.join("\n\n---\n\n"));
 }
 
 async function loadPose(){
@@ -86,6 +91,7 @@ async function loadPose(){
     setDiag(els.model,"Pose model loaded",true);
     setDiag(els.delegate,delegate,true);
     setStatus(`● AI Ready · ${delegate}`,"ready");
+    els.info.textContent=`✓ AI 真正 Ready（${delegate}）。而家可以選擇影片。`;
     els.info.textContent=`AI 已真正初始化完成（${delegate}）。選擇影片後可以開始分析。`;
     updateAnalyze();
     return true;

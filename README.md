@@ -1,8 +1,8 @@
-# Tennis Swing Lab V1.3
+# Tennis Swing Lab V1.4
 
 這一版重點不是增加更多功能，而是**真正驗證 AI 是否有成功載入及推理**。
 
-## V1.3 改動
+## V1.4 改動
 
 - MediaPipe Library 狀態
 - WASM Runtime 狀態
@@ -45,8 +45,14 @@
 如果不是 Ready，請把頁面上的紅色完整錯誤訊息 screenshot 貼回來。
 
 
-## V1.3
+## V1.4
 - Dynamic import AI library，避免 module import 失敗令整個 app 靜默停止。
 - jsDelivr ESM + unpkg fallback。
 - Library / WASM / Model / Delegate 每一層獨立顯示狀態。
 - 如果載入失敗，頁面直接顯示真正錯誤。
+
+
+## V1.4
+- 改用 Google 官方 Web guide 所示的 `vision_bundle.mjs` exact file 優先載入。
+- CDN fallback 保留。
+- 失敗時一次列出所有 CDN 的實際錯誤，避免只看到最後一個錯誤。
