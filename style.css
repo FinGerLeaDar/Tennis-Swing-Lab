@@ -1,0 +1,52 @@
+*{box-sizing:border-box}
+:root{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#edf2ff;background:#070b16}
+body{margin:0;background:radial-gradient(circle at top,#17213b 0,#070b16 42%);min-height:100vh}
+button,select,input{font:inherit}
+.topbar{padding:28px max(20px,calc((100vw - 1400px)/2));display:flex;justify-content:space-between;gap:20px;align-items:flex-start;border-bottom:1px solid #27314a}
+.eyebrow{font-size:12px;letter-spacing:.2em;color:#8ea3cf}
+h1{margin:5px 0;font-size:clamp(24px,4vw,40px)}
+h1 span{font-size:.5em;color:#8ea3cf}
+.topbar p,.section-title p{margin:6px 0;color:#94a3c2}
+.status{padding:9px 12px;border:1px solid #31405e;border-radius:999px;color:#a9b8d5;font-size:13px;white-space:nowrap}
+.app{width:min(1400px,calc(100% - 32px));margin:22px auto 50px;display:grid;gap:18px}
+.card{background:rgba(14,20,37,.9);border:1px solid #26324d;border-radius:18px;box-shadow:0 15px 50px rgba(0,0,0,.18)}
+.upload-card{padding:20px}
+.section-title,.card-head,.progress-row{display:flex;justify-content:space-between;align-items:center;gap:15px}
+h2{font-size:17px;margin:0}
+h3{font-size:14px;margin:0 0 8px}
+.file-button,.primary,.controls button{border:1px solid #344463;border-radius:11px;padding:10px 14px;background:#18233b;color:#fff;cursor:pointer}
+.file-button:hover,.controls button:hover{background:#202e4b}
+.file-button input{display:none}
+.primary{margin-top:16px;background:#2a5bd7;border-color:#4777e8;width:100%;font-weight:700}
+.primary:disabled{opacity:.45;cursor:not-allowed}
+.settings{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.settings label{display:grid;gap:7px;color:#9eacc8;font-size:13px}
+select{width:100%;padding:10px;border-radius:10px;background:#0c1324;color:#edf2ff;border:1px solid #2c3854}
+.video-meta{margin-top:15px;padding:12px;border-radius:10px;background:#0b1222;color:#aab8d1;font-size:13px}
+.hidden{display:none!important}
+.progress-wrap{margin-top:15px}
+progress{width:100%;height:10px}
+.workspace{display:grid;grid-template-columns:minmax(0,2fr) minmax(320px,1fr);gap:18px}
+.video-card,.metrics-card{padding:16px}
+.card-head{margin-bottom:13px}
+.card-head span{font-size:12px;color:#8190ad}
+.video-stage{position:relative;overflow:hidden;background:#02040a;border-radius:13px;min-height:420px;display:flex;align-items:center;justify-content:center}
+video{display:block;width:100%;height:auto;max-height:70vh;object-fit:contain}
+#poseCanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.empty-state{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#8c9bb8;text-align:center}
+.empty-state div{font-size:54px}.empty-state strong{color:#dce5fa}.empty-state span{font-size:13px}
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.controls button:disabled{opacity:.4;cursor:not-allowed}
+.timeline{width:100%;accent-color:#5e83ed}
+.phase-bar{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;margin-top:9px;font-size:10px;color:#71809e;text-align:center}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.metric{padding:13px;border-radius:12px;background:#0b1222;border:1px solid #202c45}
+.metric span{display:block;font-size:11px;color:#7f8da8;margin-bottom:5px}
+.metric strong{font-size:22px}
+.landmark-info,.notice{margin-top:15px;padding:14px;border-radius:12px;background:#0b1222;border:1px solid #202c45}
+.landmark-info p,.notice p{font-size:12px;line-height:1.55;color:#8f9db7;margin:0}
+.notice strong{font-size:13px}
+.tips{padding:18px}.tips-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}.tips-grid div{padding:12px;background:#0b1222;border-radius:10px;color:#9aa8c3;font-size:12px}
+footer{text-align:center;color:#66748f;padding:0 20px 30px;font-size:12px}
+@media(max-width:900px){.workspace{grid-template-columns:1fr}.settings{grid-template-columns:1fr}.tips-grid{grid-template-columns:1fr 1fr}.video-stage{min-height:280px}}
+@media(max-width:600px){.topbar{padding:20px 16px;display:block}.status{display:inline-block;margin-top:12px}.app{width:calc(100% - 20px);margin-top:12px}.section-title{display:block}.file-button{display:inline-block;margin-top:12px}.tips-grid{grid-template-columns:1fr}.metric strong{font-size:18px}}
