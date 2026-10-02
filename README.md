@@ -1,67 +1,45 @@
-# 🎾 Tennis Swing Lab V1.1
+# Tennis Swing Lab V1.2
 
-## 這版修正
+這一版重點不是增加更多功能，而是**真正驗證 AI 是否有成功載入及推理**。
 
-V1.1 針對第一輪 GitHub Pages 測試加入：
+## V1.2 改動
 
-- AI loading 狀態
-- GPU → CPU 自動 fallback
-- AI 載入錯誤提示
-- Retry 按鈕
-- 影片選擇後自動啟用分析
-- MediaPipe VIDEO mode 使用遞增 timestamp
-- 保持影片 local-first，不把影片上傳到 GitHub/backend
-
-## 檔案
-
-- `index.html`
-- `app.js`
-- `style.css`
-- `README.md`
+- MediaPipe Library 狀態
+- WASM Runtime 狀態
+- Pose Model 狀態
+- GPU → CPU fallback
+- 真正的 AI Ready 狀態
+- 真正單 frame Pose test
+- 清楚顯示初始化錯誤
+- Retry AI initialization
+- 選擇本機影片後才啟用分析
+- 24 秒 / 720×1280 / 30 FPS 影片可直接測試
+- 15 / 24 / 30 FPS analysis
+- 640 / 960 / 1280px analysis setting
+- 33 pose landmarks
+- 基本關節角度
 
 ## GitHub Pages
 
-將 4 個檔案放入 repository root，然後：
+只需要把以下 4 個檔案放入 GitHub Pages repository：
 
-`Settings → Pages → Deploy from a branch → main / root`
+- index.html
+- app.js
+- style.css
+- README.md
 
-## 注意
+不需要上傳影片到 GitHub。
 
-MediaPipe runtime 與 Pose Landmarker model 目前由 CDN / Google-hosted model 載入，所以第一次使用需要 Internet。
+影片由瀏覽器使用本機 File API 讀取，Pose inference 在瀏覽器內進行。
 
-影片本身由瀏覽器的 local File / HTMLVideoElement 讀取，不會 POST 到你的 GitHub repository。
+## 測試順序
 
-## 第一輪測試
+1. 開 GitHub Pages
+2. Ctrl + F5
+3. 先看 AI Engine Diagnostics
+4. 必須看到 `AI Ready · GPU` 或 `AI Ready · CPU`
+5. 再選擇你的 24 秒影片
+6. 按 `開始分析`
+7. 最後 Real Test 應顯示類似 `✓ 576/576 frames`
 
-建議先用：
-
-- 720 × 1280
-- 約 24 秒
-- 3.2 MB
-- 30 FPS
-
-的測試片。
-
-先選影片，確認右上角變成：
-
-`● AI Ready · GPU`
-
-或者：
-
-`● AI Ready · CPU`
-
-之後按：
-
-`🧠 開始分析`
-
-## V1.1 尚未包括
-
-- 球拍偵測
-- 網球偵測
-- Contact Point
-- Racket Path
-- Ball Path
-- Racket Speed
-- 專業教練級評分
-
-下一階段才加入以上功能。
+如果不是 Ready，請把頁面上的紅色完整錯誤訊息 screenshot 貼回來。
